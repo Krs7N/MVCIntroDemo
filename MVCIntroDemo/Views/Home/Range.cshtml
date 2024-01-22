@@ -1,0 +1,17 @@
+﻿@model int
+@{
+    ViewData["Title"] = $"Nums Range from 1 to {Model}";
+}
+
+<h2>@ViewData["Title"]</h2>
+<ul>
+    @for (int i = 1; i <= Model; i++)
+    {
+        <li>@i</li>
+    }
+</ul>
+
+<form asp-action="Range" method="get">
+    <input type="number" name="count" />
+    <input type="submit" value="Submit" />
+</form>

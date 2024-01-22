@@ -20,9 +20,27 @@ namespace MVCIntroDemo.Controllers
             return View();
         }
 
+        public IActionResult About()
+        {
+            ViewBag.Message = "This is an ASP.NET Core MVC app.";
+            ViewBag.Description = $"This is the About page for our first ASP.NET Core MVC app.";
+
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult Numbers()
+        {
+            return View();
+        }
+
+        public IActionResult Range(int count = 10)
+        {
+            return View(count);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
