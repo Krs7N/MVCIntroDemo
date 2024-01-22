@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using MVCIntroDemo.Models;
 
 namespace MVCIntroDemo.Controllers
@@ -20,8 +23,16 @@ namespace MVCIntroDemo.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        [ActionName("My-Products")]
+        public IActionResult Index(string? keyword = null)
         {
+            if (keyword != null)
+            {
+                var filteredProducts = _products.Where(p => p.Name!.ToLower().Contains(keyword.ToLower()));
+
+                return View(filteredProducts);
+            }
+
             return View(_products);
         }
 
@@ -32,11 +43,47 @@ namespace MVCIntroDemo.Controllers
             if (model == null)
             {
                 TempData["ErrorMessage"] = "No such product.";
-                return RedirectToAction("Index");
+                return RedirectToAction("My-Products");
                 //return BadRequest("No such product.");
             }
 
             return View(model);
+        }
+
+        public IActionResult AllAsJson()
+        {
+            var options = new JsonSerializerOptions()
+            {
+                WriteIndented = true
+            };
+
+            return Json(_products, options);
+        }
+
+        public IActionResult AllAsText()
+        {
+            var sb = new StringBuilder();
+
+            foreach (var product in _products)
+            {
+                sb.AppendLine($"Product {product.Id}: {product.Name} - {product.Price} lv.");
+            }
+
+            return Content(sb.ToString().Trim());
+        }
+
+        public IActionResult Download()
+        {
+            var sb = new StringBuilder();
+
+            foreach (var product in _products)
+            {
+                sb.AppendLine($"Product {product.Id}: {product.Name} - {product.Price} lv.");
+            }
+
+            Response.Headers.Add(HeaderNames.ContentDisposition, @"attachment; filename=products.txt");
+
+            return File(Encoding.UTF8.GetBytes(sb.ToString().Trim()), "text/plain");
         }
     }
 }
